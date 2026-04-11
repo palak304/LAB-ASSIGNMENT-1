@@ -1,77 +1,115 @@
-#0/1 Knapsack problem 
-def knapsack(W, wt, val, n):
-    dp = [[0]*(W+1) for _ in range(n+1)]
+import java.util.*;
 
-    for i in range(1, n+1):
-        for w in range(1, W+1):
-            if wt[i-1] <= w:
-                dp[i][w] = max(val[i-1] + dp[i-1][w-wt[i-1]], dp[i-1][w])
-            else:
-                dp[i][w] = dp[i-1][w]
+public class Algorithms {
 
-    return dp[n][W]
+    // 🔹 1. 0/1 Knapsack (Dynamic Programming)
+    public static int knapsack(int W, int[] wt, int[] val, int n) {
+        int[][] dp = new int[n + 1][W + 1];
 
+        for (int i = 1; i <= n; i++) {
+            for (int w = 1; w <= W; w++) {
+                if (wt[i - 1] <= w) {
+                    dp[i][w] = Math.max(val[i - 1] + dp[i - 1][w - wt[i - 1]], dp[i - 1][w]);
+                } else {
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+        return dp[n][W];
+    }
 
-#wxample
-wt = [1, 3, 4, 5]
-val = [1, 4, 5, 7]
-W = 7
-print(knapsack(W, wt, val, len(wt)))
+    // 🔹 2. Fractional Knapsack (Greedy)
+    static class Item {
+        int weight, value;
 
+        Item(int w, int v) {
+            weight = w;
+            value = v;
+        }
+    }
 
-#fractional knapsack problem 
-def fractional_knapsack(W, items):
-    items.sort(key=lambda x: x[1]/x[0], reverse=True)  # value/weight
-    total = 0
+    public static double fractionalKnapsack(int W, Item[] items) {
+        Arrays.sort(items, (a, b) -> Double.compare((double)b.value / b.weight, (double)a.value / a.weight));
 
-    for wt, val in items:
-        if W >= wt:
-            W -= wt
-            total += val
-        else:
-            total += val * (W / wt)
-            break
+        double total = 0.0;
 
-    return total
+        for (Item item : items) {
+            if (W >= item.weight) {
+                W -= item.weight;
+                total += item.value;
+            } else {
+                total += item.value * ((double) W / item.weight);
+                break;
+            }
+        }
+        return total;
+    }
 
+    // 🔹 3. Matrix Multiplication
+    public static int[][] matrixMultiply(int[][] A, int[][] B) {
+        int n = A.length;
+        int m = B[0].length;
+        int p = B.length;
 
-#example 
-items = [(10, 60), (20, 100), (30, 120)]
-print(fractional_knapsack(50, items))
+        int[][] result = new int[n][m];
 
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k < p; k++) {
+                    result[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+        return result;
+    }
 
-#matrix multiplication problem 
-def matrix_multiply(A, B):
-    result = [[0]*len(B[0]) for _ in range(len(A))]
+    // 🔹 4. Longest Common Subsequence (LCS)
+    public static int lcs(String X, String Y) {
+        int m = X.length();
+        int n = Y.length();
 
-    for i in range(len(A)):
-        for j in range(len(B[0])):
-            for k in range(len(B)):
-                result[i][j] += A[i][k] * B[k][j]
+        int[][] dp = new int[m + 1][n + 1];
 
-    return result
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (X.charAt(i - 1) == Y.charAt(j - 1)) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
 
+    // 🔹 Main Function (Testing All)
+    public static void main(String[] args) {
 
-# Example
-A = [[1,2], [3,4]]
-B = [[5,6], [7,8]]
-print(matrix_multiply(A, B))
+        // ✅ 0/1 Knapsack
+        int[] wt = {1, 3, 4, 5};
+        int[] val = {1, 4, 5, 7};
+        int W = 7;
+        System.out.println("0/1 Knapsack: " + knapsack(W, wt, val, wt.length));
 
+        // ✅ Fractional Knapsack
+        Item[] items = {
+            new Item(10, 60),
+            new Item(20, 100),
+            new Item(30, 120)
+        };
+        System.out.println("Fractional Knapsack: " + fractionalKnapsack(50, items));
 
-#Longest Common Subsequence (LCS) problem
-def lcs(X, Y):
-    m, n = len(X), len(Y)
-    dp = [[0]*(n+1) for _ in range(m+1)]
+        // ✅ Matrix Multiplication
+        int[][] A = {{1, 2}, {3, 4}};
+        int[][] B = {{5, 6}, {7, 8}};
+        int[][] result = matrixMultiply(A, B);
 
-    for i in range(1, m+1):
-        for j in range(1, n+1):
-            if X[i-1] == Y[j-1]:
-                dp[i][j] = 1 + dp[i-1][j-1]
-            else:
-                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+        System.out.println("Matrix Multiplication Result:");
+        for (int[] row : result) {
+            System.out.println(Arrays.toString(row));
+        }
 
-    return dp[m][n]
-
-
-# Example
-print(lcs("ABCBDAB", "BDCAB"))
+        // ✅ LCS
+        System.out.println("LCS Length: " + lcs("ABCBDAB", "BDCAB"));
+    }
+}
