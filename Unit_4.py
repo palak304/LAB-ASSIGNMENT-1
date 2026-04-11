@@ -1,63 +1,73 @@
-N = 4
+import java.util.*;
 
-def print_board(board):
-    for i in range(N):
-        for j in range(N):
-            print(board[i][j], end=" ")
-        print()
+public class NQueen {
 
+    static int N = 4;
 
-def is_valid(board, row, col):
-    # check left row
-    for i in range(col):
-        if board[row][i]:
-            return False
+    // 🔹 Print Board
+    public static void printBoard(int[][] board) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
 
-    # upper diagonal
-    i, j = row, col
-    while i >= 0 and j >= 0:
-        if board[i][j]:
-            return False
-        i -= 1
-        j -= 1
+    // 🔹 Check if position is safe
+    public static boolean isValid(int[][] board, int row, int col) {
 
-    # lower diagonal
-    i, j = row, col
-    while i < N and j >= 0:
-        if board[i][j]:
-            return False
-        i += 1
-        j -= 1
+        // Check left side of row
+        for (int i = 0; i < col; i++) {
+            if (board[row][i] == 1)
+                return false;
+        }
 
-    return True
+        // Check upper diagonal
+        for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 1)
+                return false;
+        }
 
+        // Check lower diagonal
+        for (int i = row, j = col; i < N && j >= 0; i++, j--) {
+            if (board[i][j] == 1)
+                return false;
+        }
 
-def solve_n_queen(board, col):
-    if col >= N:
-        return True
+        return true;
+    }
 
-    for i in range(N):
-        if is_valid(board, i, col):
-            board[i][col] = 1
+    // 🔹 Solve using Backtracking
+    public static boolean solveNQueen(int[][] board, int col) {
 
-            if solve_n_queen(board, col + 1):
-                return True
+        if (col >= N)
+            return true;
 
-            board[i][col] = 0  # backtrack
+        for (int i = 0; i < N; i++) {
 
-    return False
+            if (isValid(board, i, col)) {
+                board[i][col] = 1;
 
+                if (solveNQueen(board, col + 1))
+                    return true;
 
-def check_solution():
-    board = [[0]*N for _ in range(N)]
+                // Backtrack
+                board[i][col] = 0;
+            }
+        }
+        return false;
+    }
 
-    if not solve_n_queen(board, 0):
-        print("Solution does not exist")
-        return False
+    // 🔹 Main Method
+    public static void main(String[] args) {
 
-    print_board(board)
-    return True
+        int[][] board = new int[N][N];
 
-
-# main
-check_solution()
+        if (!solveNQueen(board, 0)) {
+            System.out.println("Solution does not exist");
+        } else {
+            printBoard(board);
+        }
+    }
+}
